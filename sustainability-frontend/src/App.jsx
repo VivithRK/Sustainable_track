@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Alert, Snackbar, AppBar, Toolbar, Button } from '@mui/material';
+import { Container, Typography, Box, Alert, Snackbar, AppBar, Toolbar, Button, CircularProgress } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ActionForm from './components/ActionForm';
@@ -16,9 +16,29 @@ const Dashboard = ({
   handleSubmit, 
   handleEdit, 
   handleDelete, 
-  handleCloseNotification 
+  handleCloseNotification,
+  isLoading,
+  error 
 }) => {
   const totalPoints = actions.reduce((sum, action) => sum + action.points, 0);
+
+  if (error) {
+    return (
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Container maxWidth="md" sx={{ mt: 4, textAlign: 'center' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
 
   return (
     <AnimatedPage>
@@ -127,6 +147,8 @@ const Navigation = () => {
 function App() {
   const [actions, setActions] = useState([]);
   const [editingAction, setEditingAction] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [notification, setNotification] = useState({
     open: false,
     message: '',
@@ -135,10 +157,16 @@ function App() {
 
   const fetchActions = async () => {
     try {
+      setIsLoading(true);
+      setError(null);
       const data = await api.getActions();
       setActions(data);
     } catch (error) {
+      console.error('Error fetching actions:', error);
+      setError(error.message || 'Error fetching actions. Please check if the backend server is running.');
       showNotification('Error fetching actions', 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -210,6 +238,8 @@ function App() {
                 handleEdit={handleEdit}
                 handleDelete={handleDelete}
                 handleCloseNotification={handleCloseNotification}
+                isLoading={isLoading}
+                error={error}
               />
             } 
           />
