@@ -11,6 +11,16 @@ Make sure you have installed:
 
 ## Running the Application
 
+### Step 0: Get the Code
+
+1. Open a terminal/command prompt
+2. Navigate to where you want to store the project
+3. Run this command:
+```powershell
+git clone https://github.com/VivithRK/Sustainable_track.git
+cd Sustainable_track
+```
+
 ### Step 1: Start the Backend Server
 
 1. Open a new terminal/command prompt
